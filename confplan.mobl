@@ -1,0 +1,106 @@
+application confplan
+
+import data
+import logic
+import mobl::ui::generic
+
+load confplan.css
+
+var daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+screen root() {
+  header("Conferences") {
+    button("Init", onclick={
+      //resetDatabase();
+      loadGpce();
+      loadSle();
+    })
+  }
+  group {
+    list(conf in Conference.all()) {
+      itemArrow(onclick={ conferenceDayPicker(conf); }) { label(conf.name) }
+    }
+  }
+}
+
+screen conferenceDayPicker(conf : Conference) {
+  header(conf.name) {
+    backButton()
+  }
+  group {
+    itemArrow(onclick={ conference(conf); }) { "All" }
+    list(day in determineDays(conf)) {
+      itemArrow(onclick={ conferenceForDay(conf, day); }) { label(daysOfWeek.get(day.getDay())) }
+    }
+  }
+}
+
+control eventItem(evt : Event) {
+  itemArrow(onclick={ showEvent(evt); }) {
+    floatBox(right=15) {
+      <span class="dateBlob">
+        label(buildTimeString(evt.startDate))
+        cond(evt.endDate != null) {
+          "-" label(buildTimeString(evt.endDate))
+        }
+      </span>
+    }
+    label(evt.name)
+  }
+}
+
+screen conferenceForDay(conf : Conference, startDate : DateTime) {
+  var tomorrow = DateTime.create(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 1)
+  header(conf.name + ": " + daysOfWeek.get(startDate.getDay())) {
+    backButton()
+  }
+  group {
+    list(event in conf.events where startDate >= startDate && startDate < tomorrow order by startDate asc) {
+      eventItem(event)
+    }
+  }
+}
+
+screen conference(conf : Conference) {
+  header(conf.name) {
+    backButton()
+  }
+  list(day in determineDays(conf)) {
+    var tomorrow = DateTime.create(day.getFullYear(), day.getMonth(), day.getDate() + 1)
+    <h2>label(daysOfWeek.get(day.getDay()))</h2>
+    group {
+      list(event in conf.events where startDate >= day && startDate < tomorrow order by startDate asc) {
+        eventItem(event)
+      }
+    }
+  }
+}
+
+
+screen showEvent(evt : Event) {
+  header(evt.conference.name + " event") {
+    backButton()
+  }
+  table {
+    row {
+      headerCol(width="100px") { "Title:" }
+      col { label(evt.name) }
+    }
+    row {
+      headerCol { "Speaker: " }
+      col { label(evt.speaker) }
+    }
+    row {
+      headerCol { "Abstract: " }
+      col { label(evt.abstract) }
+    }
+    row {
+      headerCol { "Start time: " }
+      col { label(buildTimeString(evt.startDate)) }
+    }
+    row {
+      headerCol { "End time: " }
+      col { label(buildTimeString(evt.endDate)) }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+application admin
+
+import mobl::ui::generic
+import mobl::ui::generic::datepicker
+import data
+
+service ConferenceStore {
+  resource listConferences() : [Conference] {
+    method = "GET"
+    uri = "/conferences"
+  }
+
+  resource newConference(name : String, description : String) : Dynamic {
+    method = "POST"
+    uri = "/newConference"
+    encoding = "text"
+  }
+
+  resource editConference(id : String, name : String, description : String) : Dynamic {
+    method = "POST"
+    uri = "/editConference"
+    encoding = "text"
+  }
+
+  resource viewConference(id : String) : Conference {
+    method = "GET"
+    uri = "/viewConference"
+  }
+
+  resource listEvents(conference : String) : [Event] {
+    method = "GET"
+    uri = "/listEvents"
+  }
+
+  resource newEvent(conference : String, name : String, startDate : Num, endDate : Num, speaker : String, abstract : String) : Dynamic {
+    method = "POST"
+    encoding = "text"
+    uri = "/newEvent"
+  }
+
+}
+
+screen root() {
+  header("Conferences") {
+    button("Add", onclick={ addConference(); })
+  }
+  group {
+    list(c in ConferenceStore.listConferences()) {
+      item(onclick={ editConference(c); }) { label(c.name) }
+    }
+  }
+}
+
+screen editConference(conf : Conference) {
+  header(conf.name) {
+    backButton()
+    button("Done", onclick={
+      ConferenceStore.editConference(conf.id, conf.name, conf.description);
+      screen return;
+    })
+  }
+  group {
+    item { textField(conf.name, label="name") }
+    item { textField(conf.description, label="description") }
+  }
+  <h2>"Events"</h2>
+  group {
+    list(e in ConferenceStore.listEvents(conf.id)) {
+      item { label(e.name) }
+    }
+  }
+  button("Add event", onclick={addEvent(conf);})
+}
+
+screen addEvent(conf : Conference) {
+  var name = ""
+  var startDate = now()
+  var endDate = now()
+  var speaker = ""
+  var abstract = ""
+  header("Add") {
+    button("Done", onclick={
+      ConferenceStore.newEvent(conf.id, name, startDate, endDate, speaker, abstract);
+      screen return;
+    })
+  }
+  group {
+    item { textField(name, label="name") }
+    item { textField(speaker, label="speaker") }
+    item { datePicker(startDate) }
+    item { datePicker(endDate) }
+    item { textField(abstract, label="abstract") }
+  }
+}
+
+screen addConference() {
+  var name = ""
+  var description = ""
+  header("Add") {
+    button("Done", onclick={
+      ConferenceStore.newConference(name, description);
+      screen return;
+    })
+  }
+  group {
+    item { textField(name, label="name") }
+    item { textField(description, label="description") }
+  }
+}

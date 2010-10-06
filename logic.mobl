@@ -1,0 +1,26 @@
+module logic
+
+import data
+
+function determineDays(conf : Conference) : [DateTime] {
+  var dates = Array<DateTime>();
+  var firstEvent : Event = (conf.events order by startDate asc limit 1).one();
+  var lastEvent : Event = (conf.events order by startDate desc limit 1).one();
+  var currentDate : DateTime = firstEvent.startDate;
+  while(currentDate <= lastEvent.startDate) {
+    dates.push(DateTime.create(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()));
+    currentDate = DateTime.create(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + 1);
+  }
+  return dates;
+}
+
+function buildTimeString(d : DateTime) : String {
+  if(d == null) {
+    return "Unknown";
+  }
+  var result = (d.getHours() < 10 ? "0" : "") + d.getHours() + ":";
+  if(d.getMinutes() < 10) {
+    result = result + "0";
+  }
+  return result + d.getMinutes();
+}
