@@ -1,6 +1,31 @@
 module logic
 
 import data
+import mobl::location
+
+service DataProvider {
+  resource getNearbyConferences(lat : Num, long : Num) : [JSON] {
+    uri = "/nearbyConferences"
+  }
+  resource fetchProgram(conferenceId : String) : [JSON] {
+    uri = "/conferenceProgram"
+  }
+}
+
+function loadLocalConferences() {
+  var position = getPosition();
+  var nearbyConferencesJson = DataProvider.getNearbyConferences(position.latitude, position.longitude);
+  foreach(jsonObj in nearbyConferencesJson) {
+    Conference.fromSelectJson(jsonObj);
+  }
+}
+
+function fetchProgram(conf : Conference) {
+  var eventsJson = DataProvider.fetchProgram(conf.id);
+  foreach(jsonObj in eventsJson) {
+    Event.fromSelectJson(jsonObj);
+  }
+}
 
 function determineDays(conf : Conference) : [DateTime] {
   var dates = Array<DateTime>();

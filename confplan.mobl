@@ -1,52 +1,78 @@
 application confplan
 
+title "ConfPlan"
+
 import data
+import dummy
 import logic
 import mobl::ui::generic
+import mobl::notify
 
 load confplan.css
 
 var daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 screen root() {
-  header("Conferences") {
-    button("Init", onclick={
-      //resetDatabase();
-      loadGpce();
-      loadSle();
-    })
+  header("Determining location")
+  "One moment please..."
+
+  script {
+    async {
+      //loadLocalConferences();
+      var cnt = Conference.all().count();
+      if(cnt == 0) {
+        loadGpce();
+        loadSle();
+        flushDatabase();
+      }
+      pickConference();
+    }
   }
+}
+
+screen pickConference() {
+  header("Conferences")
   group {
     list(conf in Conference.all()) {
-      itemArrow(onclick={ conferenceDayPicker(conf); }) { label(conf.name) }
+      itemArrow(onclick={ conference(conf); }) { label(conf.name) }
     }
   }
+  /*button("Reset all data", onclick={
+        resetDatabase();
+        reload();
+      })*/
 }
 
-screen conferenceDayPicker(conf : Conference) {
-  header(conf.name) {
-    backButton()
-  }
-  group {
-    itemArrow(onclick={ conference(conf); }) { "All" }
-    list(day in determineDays(conf)) {
-      itemArrow(onclick={ conferenceForDay(conf, day); }) { label(daysOfWeek.get(day.getDay())) }
+screen conference(conf : Conference) {
+  control schedule() {
+    header("Schedule") { backButton() }
+    group {
+      itemArrow(onclick={ conferenceAll(conf); }) { "All" }
+      list(day in determineDays(conf)) {
+        itemArrow(onclick={ conferenceForDay(conf, day); }) { label(daysOfWeek.get(day.getDay())) }
+      }
     }
   }
-}
 
-control eventItem(evt : Event) {
-  itemArrow(onclick={ showEvent(evt); }) {
-    floatBox(right=15) {
-      <span class="dateBlob">
-        label(buildTimeString(evt.startDate))
-        cond(evt.endDate != null) {
-          "-" label(buildTimeString(evt.endDate))
-        }
-      </span>
+  control upcoming() {
+    var nowDate = DateTime.create(2010, 9, 7)//now()
+    header("What's next?") { backButton() }
+    script {
+      repeat(15*60000, {
+        nowDate = now();
+      });
     }
-    label(evt.name)
+    masterDetail(conf.events where startDate > nowDate order by startDate asc limit 10, eventItem, eventDetails)
   }
+
+  control search() {
+    header("Search") { backButton() }
+    var phrase = ""
+    searchBox(phrase, placeholder="Search term")
+    masterDetail(Event.searchPrefix(phrase) where conference == conf limit 10, eventItem, eventDetails)
+  }
+
+  tabSet([("Schedule", "", schedule), ("Next", "", upcoming), ("Search", "", search)])
 }
 
 screen conferenceForDay(conf : Conference, startDate : DateTime) {
@@ -54,36 +80,47 @@ screen conferenceForDay(conf : Conference, startDate : DateTime) {
   header(conf.name + ": " + daysOfWeek.get(startDate.getDay())) {
     backButton()
   }
-  group {
-    list(event in conf.events where startDate >= startDate && startDate < tomorrow order by startDate asc) {
-      eventItem(event)
-    }
-  }
+  masterDetail(conf.events where startDate >= startDate && startDate < tomorrow order by startDate asc, eventItem, eventDetails)
 }
 
-screen conference(conf : Conference) {
-  header(conf.name) {
-    backButton()
-  }
+screen conferenceAll(conf : Conference) {
+  header(conf.name) { backButton() }
   list(day in determineDays(conf)) {
     var tomorrow = DateTime.create(day.getFullYear(), day.getMonth(), day.getDate() + 1)
     <h2>label(daysOfWeek.get(day.getDay()))</h2>
     group {
       list(event in conf.events where startDate >= day && startDate < tomorrow order by startDate asc) {
-        eventItem(event)
+        item {
+          eventItem(event)
+        }
       }
     }
   }
 }
 
-
 screen showEvent(evt : Event) {
-  header(evt.conference.name + " event") {
-    backButton()
+  header("Event details") { backButton() }
+  eventDetails(evt)
+}
+
+control eventItem(evt : Event) {
+  floatBox(left=5) {
+    block("dateBlob" + (evt.favorite ? "Fav" : ""), onclick={ evt.favorite = !evt.favorite; }) {
+      label(buildTimeString(evt.startDate))
+    }
   }
+  block("event") {
+    label(evt.name)
+    block("speaker") {
+      label(evt.speaker)
+    }
+  }
+}
+
+control eventDetails(evt : Event) {
   table {
     row {
-      headerCol(width="100px") { "Title:" }
+      headerCol { "Title:" }
       col { label(evt.name) }
     }
     row {
@@ -91,16 +128,15 @@ screen showEvent(evt : Event) {
       col { label(evt.speaker) }
     }
     row {
-      headerCol { "Abstract: " }
-      col { label(evt.abstract) }
-    }
-    row {
       headerCol { "Start time: " }
       col { label(buildTimeString(evt.startDate)) }
     }
     row {
-      headerCol { "End time: " }
-      col { label(buildTimeString(evt.endDate)) }
+      headerCol { "Favorite: " }
+      col { checkBox(evt.favorite, label="Favorite") }
     }
+  }
+  block("textBlob") {
+    label(evt.abstract)
   }
 }

@@ -1,118 +1,18 @@
 module data
 
 entity Conference {
-  name        : String
-  description : String
-  events      : Collection<Event> (inverse: conference)
+  name         : String
+  description  : String
+  locationLong : Num
+  locationLat  : Num
+  events       : Collection<Event> (inverse: conference)
 }
 
 entity Event {
   conference : Conference (inverse: events)
-  name       : String
-  speaker    : String
-  abstract   : String
+  name       : String (searchable)
+  speaker    : String (searchable)
+  abstract   : String (searchable)
   startDate  : DateTime
-  endDate    : DateTime
-}
-
-entity NewsItem {
-  title      : String
-  text       : String
-  date       : DateTime
-}
-
-function loadGpce() {
-  var conf = Conference(name="GPCE");
-  add(conf);
-  // Sunday
-  conf.events.add(Event(name="Registration", startDate=DateTime.create(2010, 9, 10, 8, 30)));
-  conf.events.add(Event(name="Opening", startDate=DateTime.create(2010, 9, 10, 8, 50)));
-  conf.events.add(Event(name="Tutorial 1: Project Fortress: A Growable Language for Scientists and Engineers", speaker="Sukyoung Ryu", startDate=DateTime.create(2010, 9, 10, 9, 0)));
-  conf.events.add(Event(name="Break", startDate=DateTime.create(2010, 9, 10, 10, 0)));
-  conf.events.add(Event(name="Tutorial 2: Mega-Modeling Software Language Artifacts", speaker="Jean-Marie Favre, Dragan Gasevic, Ralf Laemmel", startDate=DateTime.create(2010, 9, 10, 10, 30)));
-  conf.events.add(Event(name="Tutorial 3: Embedded Domain-Specific Language Implementation using Dependent Types", speaker="Edwin Brady", startDate=DateTime.create(2010, 9, 10, 11, 30)));
-  conf.events.add(Event(name="Lunch", startDate=DateTime.create(2010, 9, 10, 12, 30)));
-  conf.events.add(Event(name="Tutorial 4: Agile and Efficient Domain-Specific Languages using Multi-Stage Programming in Java Mint", speaker="Mathias Ricken, Edwin Westbrook, Walid Taha", startDate=DateTime.create(2010, 9, 10, 13, 30)));
-  conf.events.add(Event(name="Tutorial 5: Ontologies and Software Language Engineering", speaker="Dragan Gasevic, Fernando Silva Parreiras, Tobias Walter", startDate=DateTime.create(2010, 9, 10, 14, 30)));
-  conf.events.add(Event(name="Break", startDate=DateTime.create(2010, 9, 10, 15, 30)));
-  conf.events.add(Event(name="Tutorial 6: Language Definition and Extension with MPS", speaker="Markus Voelter", startDate=DateTime.create(2010, 9, 10, 16, 0)));
-  conf.events.add(Event(name="End", startDate=DateTime.create(2010, 9, 10, 17, 0)));
-
-  // Monday
-  conf.events.add(Event(name="Opening", startDate=DateTime.create(2010, 9, 11, 8, 45)));
-  conf.events.add(Event(name="Keynote: The Hitchhiker's Guide to Software Languages", speaker="Ralf Laemmel", startDate=DateTime.create(2010, 9, 11, 9, 0)));
-  conf.events.add(Event(name="Coffee", startDate=DateTime.create(2010, 9, 11, 10, 0)));
-  conf.events.add(Event(name="Abstract Delta Modeling", speaker="Dave Clarke, Michiel Helvensteijn and Ina Schaefer", startDate=DateTime.create(2010, 9, 11, 10, 30)));
-  conf.events.add(Event(name="Automatic Variation-Point Identification in Function-Block-Based Models", speaker="Uwe Ryssel, Joern Ploennigs and Klaus Kabitzsch", startDate=DateTime.create(2010, 9, 11, 11, 0)));
-  conf.events.add(Event(name="Efficient Extraction and Analysis of Preprocessor-Based Variability", speaker="Julio Sincero, Reinhard Tartler, Daniel Lohmann and Wolfgang Schršder-Preikschat", startDate=DateTime.create(2010, 9, 11, 11, 30)));
-  conf.events.add(Event(name="Lunch", startDate=DateTime.create(2010, 9, 11, 12, 0)));
-  conf.events.add(Event(name="Iterative Type Inference with Attribute Grammars", speaker="Arie Middelkoop, S. Doaitse Swierstra and Atze Dijkstra", startDate=DateTime.create(2010, 9, 11, 13, 30)));
-  conf.events.add(Event(name="Automatic and Efficient Simulation of Operation Contracts", speaker="Matthias P. Krieger, Alexander Knapp and Burkhart Wolff", startDate=DateTime.create(2010, 9, 11, 14, 0)));
-  conf.events.add(Event(name="Implicit Invocation Meets Safe, Implicit Concurrency", speaker="Yuheng Long, Sean Mooney, Tyler Sondag and Hridesh Rajan", startDate=DateTime.create(2010, 9, 11, 14, 30)));
-  conf.events.add(Event(name="Coffee", startDate=DateTime.create(2010, 9, 11, 15, 0)));
-  conf.events.add(Event(name="A Component-based Run-time Evolution Infrastructure for Resource-Constrained Embedded Systems", speaker="Juan F. Navas, Jean-Philippe Babau and Jacques Pulou", startDate=DateTime.create(2010, 9, 11, 15, 30)));
-  conf.events.add(Event(name="Modular Domain-Specific Language Components in Scala", speaker="Christian Hofer and Klaus Ostermann", startDate=DateTime.create(2010, 9, 11, 16, 0)));
-  conf.events.add(Event(name="Adding Genericity to a Plug-in Framework", speaker="Reinhard Wolfinger, Markus Loeberbauer, Markus Jahn and Hanspeter Moessenboeck", startDate=DateTime.create(2010, 9, 11, 16, 30)));
-  conf.events.add(Event(name="Reception", startDate=DateTime.create(2010, 9, 11, 17, 30), endDate=DateTime.create(2010, 9, 11, 19, 0)));
-
-  // Tuesday
-  conf.events.add(Event(name="Opening", startDate=DateTime.create(2010, 9, 12, 8, 45)));
-  conf.events.add(Event(name="Keynote: A Language for Software Variation Research", speaker="Martin Erwig", startDate=DateTime.create(2010, 9, 12, 9, 0)));
-  conf.events.add(Event(name="Coffee", startDate=DateTime.create(2010, 9, 12, 10, 0)));
-  conf.events.add(Event(name="Code Clones in Feature-Oriented Software Product Lines", speaker="Sandro Schulze, Sven Apel and Christian Kaestner", startDate=DateTime.create(2010, 9, 12, 10, 30)));
-  conf.events.add(Event(name="Composition of Dynamic Analysis Aspects", speaker="Eric Tanter, Philippe Moret, Walter Binder and Danilo Ansaloni", startDate=DateTime.create(2010, 9, 12, 11, 0)));
-  conf.events.add(Event(name="Applications of Dynamic Code Evolution for Java in GUI Development and Dynamic Aspect-Oriented Programming", speaker="Thomas Wuerthinger, Walter Binder, Danilo Ansaloni, Philippe Moret and Hanspeter Moessenboeck", startDate=DateTime.create(2010, 9, 12, 11, 30)));
-  conf.events.add(Event(name="Lunch", startDate=DateTime.create(2010, 9, 12, 12, 0)));
-  conf.events.add(Event(name="Lightweight Modular Staging: A Pragmatic Approach to Runtime Code Generation and Compiled DSLs", speaker="Tiark Rompf and Martin Odersky", startDate=DateTime.create(2010, 9, 12, 13, 30)));
-  conf.events.add(Event(name="Domain-specific Language Integration with Compile-time Parser Generator Library", speaker="Zoltan Porkolab and Abel Sinkovics", startDate=DateTime.create(2010, 9, 12, 14, 0)));
-  conf.events.add(Event(name="ABI Compatibility Through a Customizable Language", speaker="Atkinson, Matthew Flatt and Gary Lindstrom", startDate=DateTime.create(2010, 9, 12, 14, 30)));
-  conf.events.add(Event(name="Coffee", startDate=DateTime.create(2010, 9, 12, 15, 0)));
-  conf.events.add(Event(name="Model-based Kinematics Generation for Modular Mechatronic Toolkits", speaker="Mirko Bordignon, Ulrik P. Schultz and Kasper Stoy", startDate=DateTime.create(2010, 9, 12, 15, 30)));
-  conf.events.add(Event(name="Incremental Type-Checking for Type-Reflective Metaprograms", speaker="Weiyu Miao and Jeremy Siek", startDate=DateTime.create(2010, 9, 12, 16, 0)));
-  conf.events.add(Event(name="JEqualityGen: Generating equality and hashing methods", speaker="Neville Grech, Julian Rathke and Bernd Fischer", startDate=DateTime.create(2010, 9, 12, 16, 30)));
-  conf.events.add(Event(name="Banquet at DAF Museum", startDate=DateTime.create(2010, 9, 12, 18, 0), endDate=DateTime.create(2010, 9, 12, 22, 0)));
-}
-
-function loadSle() {
-  var conf = Conference(name="SLE");
-  add(conf);
-
-  // Tuesday
-  conf.events.add(Event(name="Opening", startDate=DateTime.create(2010, 9, 12, 8, 45)));
-  conf.events.add(Event(name="Keynote: A Language for Software Variation Research", speaker="Martin Erwig", startDate=DateTime.create(2010, 9, 12, 9, 0)));
-  conf.events.add(Event(name="Coffee", startDate=DateTime.create(2010, 9, 12, 10, 0)));
-  conf.events.add(Event(name="Automated Selective Caching for Reference Attribute Grammars", speaker="Emma Soederberg and Goerel Hedin", startDate=DateTime.create(2010, 9, 12, 10, 30)));
-  conf.events.add(Event(name="Reference Attribute Grammars for Metamodel Semantics", speaker="Christoff Buerger, Sven Karol, Christian Wende and Uwe Assmann", startDate=DateTime.create(2010, 9, 12, 11, 0)));
-  conf.events.add(Event(name="Modelling GLL parser implementations", speaker="Adrian Johnstone and Elizabeth Scott", startDate=DateTime.create(2010, 9, 12, 11, 30)));
-  conf.events.add(Event(name="Lunch", startDate=DateTime.create(2010, 9, 12, 12, 0)));
-  conf.events.add(Event(name="Metamodel Usage Analysis for identifying Metamodel Improvements", speaker="Markus Herrmannsdšrfer, Daniel Ratiu and Maximilian Koegel", startDate=DateTime.create(2010, 9, 12, 13, 30)));
-  conf.events.add(Event(name="Domain-Specific Modelling Languages with Algebraic Graph Transformations on RDF", speaker="Benjamin Braatz and Christoph Brandt", startDate=DateTime.create(2010, 9, 12, 14, 0)));
-  conf.events.add(Event(name="Feature and Meta-Models in Clafer: Mixed, Specialized, and Coupled", speaker="Kacper Bak, Krzysztof Czarnecki and Andrzej Wasowski", startDate=DateTime.create(2010, 9, 12, 14, 30)));
-  conf.events.add(Event(name="Break", startDate=DateTime.create(2010, 9, 12, 15, 0)));
-  conf.events.add(Event(name="Support for the Evolution of C++ Generic Functions", speaker="Peter Pirkelbauer, Damian Dechev and Bjarne Stroustrup", startDate=DateTime.create(2010, 9, 12, 15, 30)));
-  conf.events.add(Event(name="Automated co-evolution of GMF editor models", speaker="Davide Di Ruscio, Ralf Laemmel and Alfonso Pierantonio", startDate=DateTime.create(2010, 9, 12, 16, 0)));
-  conf.events.add(Event(name="An Extensive Catalog of Operators for the Coupled Evolution of Metamodels and Models", speaker="Markus Herrmannsdoerfer, Sander Vermolen and Guido Wachsmuth", startDate=DateTime.create(2010, 9, 12, 16, 30)));
-  conf.events.add(Event(name="JTL: a bidirectional and change propagating transformation language", speaker="Romina Eramo, Alfonso Pierantonio, Davide Di Ruscio and Antonio Cicchetti", startDate=DateTime.create(2010, 9, 12, 17, 0)));
-  conf.events.add(Event(name="Dinner", startDate=DateTime.create(2010, 9, 12, 18, 0)));
-
-  // Wednesday
-  conf.events.add(Event(name="Keynote: Software Engineering and the Semantic Web - a match made in heaven or in hell?", speaker="Abraham Bernstein", startDate=DateTime.create(2010, 9, 13, 9, 0)));
-  conf.events.add(Event(name="Coffee", startDate=DateTime.create(2010, 9, 13, 10, 0)));
-  conf.events.add(Event(name="A Unified Format for Language Documents", speaker="Vadim Zaytsev and Ralf Laemmel", startDate=DateTime.create(2010, 9, 13, 10, 30)));
-  conf.events.add(Event(name="Canonical method names for Java", speaker="Einar Host and Bjarte Ostvold", startDate=DateTime.create(2010, 9, 13, 11, 0)));
-  conf.events.add(Event(name="Subjective-C: Bringing Context to Mobile Platform Programming", speaker="Sebastian Gonzalez, Nicolas Cardozo, Kim Mens, Alfredo Cadiz, Jean-Christophe Libbrecht and Julien Goffaux", startDate=DateTime.create(2010, 9, 13, 11, 30)));
-  conf.events.add(Event(name="Lunch", startDate=DateTime.create(2010, 9, 13, 12, 0)));
-  conf.events.add(Event(name="The Level-agnostic Modeling Language", speaker="Colin Atkinson, Bastian Kennel and Bjoern Goss", startDate=DateTime.create(2010, 9, 13, 13, 30)));
-  conf.events.add(Event(name="Debugging in Domain-Specific Modelling", speaker="Raphael Mannadiar and Hans Vangheluwe", startDate=DateTime.create(2010, 9, 13, 13, 50)));
-  conf.events.add(Event(name="COPE - A Workbench for the Coupled Evolution of Metamodels and Models", speaker="Markus Herrmannsdoerfer", startDate=DateTime.create(2010, 9, 13, 14, 10)));
-  conf.events.add(Event(name="DSLTrans: A Turing Incomplete Transformation Language", speaker="Bruno Barroca, Levi Lucio, Vasco Amaral, Roberto Felix and Vasco Sousa", startDate=DateTime.create(2010, 9, 13, 13, 30)));
-  conf.events.add(Event(name="Translator generation using ART", speaker="Adrian Johnstone and Elizabeth Scott", startDate=DateTime.create(2010, 9, 13, 13, 50)));
-  conf.events.add(Event(name="Empirical language analysis in software linguistics", speaker="Jean-Marie Favre, Dragan Gasevic, Ralf Laemmel and Ekaterina Pek", startDate=DateTime.create(2010, 9, 13, 14, 10)));
-  conf.events.add(Event(name="Interactive Disambiguation of Meta Programs with Concrete Object Syntax", speaker="Lennart C. L. Kats, Karl T. Kalleberg and Eelco Visser", startDate=DateTime.create(2010, 9, 13, 14, 30)));
-  conf.events.add(Event(name="Break", startDate=DateTime.create(2010, 9, 13, 14, 50)));
-  conf.events.add(Event(name="Evaluating a Textual Feature Modelling Language: Four Industrial Case Studies", speaker="Arnaud Hubaux, Quentin Boucher, Herman Hartmann, Rapha‘l Michel and Patrick Heymans", startDate=DateTime.create(2010, 9, 13, 15, 15)));
-  conf.events.add(Event(name="Extending DMM Behavior Specifications for Visual Execution and Debugging	", speaker="Nils Bandener, Gregor Engels and Christian Soltenborn", startDate=DateTime.create(2010, 9, 13, 15, 45)));
-  conf.events.add(Event(name="Analysing the Cognitive Effectiveness of the BPMN 2.0 Visual Notation", speaker="Nicolas Genon, Patrick Heymans and Daniel Amyot", startDate=DateTime.create(2010, 9, 13, 16, 15)));
-  conf.events.add(Event(name="Featherweight TeX and Parser Correctness", speaker="Sebastian Thore Erdweg and Klaus Ostermann", startDate=DateTime.create(2010, 9, 13, 16, 45)));
-  conf.events.add(Event(name="Closing", startDate=DateTime.create(2010, 9, 13, 17, 15)));
+  favorite   : Bool
 }
