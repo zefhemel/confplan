@@ -1,7 +1,5 @@
 application confplan
 
-title "ConfPlan"
-
 import data
 import dummy
 import logic
@@ -34,7 +32,7 @@ screen pickConference() {
   header("Conferences")
   group {
     list(conf in Conference.all()) {
-      itemArrow(onclick={ conference(conf); }) { label(conf.name) }
+      item(onclick={ conference(conf); }) { label(conf.name) }
     }
   }
   /*button("Reset all data", onclick={
@@ -47,9 +45,9 @@ screen conference(conf : Conference) {
   control schedule() {
     header("Schedule") { backButton() }
     group {
-      itemArrow(onclick={ conferenceAll(conf); }) { "All" }
+      item(onclick={ conferenceAll(conf); }) { "All" }
       list(day in determineDays(conf)) {
-        itemArrow(onclick={ conferenceForDay(conf, day); }) { label(daysOfWeek.get(day.getDay())) }
+        item(onclick={ conferenceForDay(conf, day); }) { label(daysOfWeek.get(day.getDay())) }
       }
     }
   }
@@ -105,7 +103,9 @@ screen showEvent(evt : Event) {
 
 control eventItem(evt : Event) {
   floatBox(left=5) {
-    block("dateBlob" + (evt.favorite ? "Fav" : ""), onclick={ evt.favorite = !evt.favorite; }) {
+    block("dateBlob" + (evt.favorite ? "Fav" : ""), onclick={
+      evt.favorite = !evt.favorite;
+    }) {
       label(buildTimeString(evt.startDate))
     }
   }
